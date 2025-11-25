@@ -2,26 +2,198 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Tale of Three Brothers - Design System Variables */
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  /* Background colors */
+  --background: #1a1612;
+  --surface: #241f1a;
+  --paper: #2a2420;
+  --border: #3d352d;
+
+  /* Silhouette and primary colors */
+  --silhouette: #0a0908;
+  --gold: #c9a227;
+  --gold-bright: #d4a847;
+  --gold-glow: #ffd700;
+  --gold-muted: #8b7355;
+
+  /* Text colors */
+  --text-primary: #e8dcc8;
+  --text-secondary: #9a8b7a;
+  --text-accent: #c9a227;
+
+  /* Accent colors */
+  --accent-brown: #8b4513;
+  --accent-warm: #4a3f35;
+
+  /* Foreground for compatibility */
+  --foreground: #e8dcc8;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+/* Base styles */
+html {
+  scroll-behavior: smooth;
 }
 
 body {
-  color: var(--foreground);
+  color: var(--text-primary);
   background: var(--background);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-crimson), Georgia, serif;
+  line-height: 1.7;
+  overflow-x: hidden;
 }
 
+/* Selection styling */
+::selection {
+  background: var(--gold);
+  color: var(--silhouette);
+}
+
+/* Scrollbar styling */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--background);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--border);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--gold-muted);
+}
+
+/* Typography base styles */
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-cinzel), serif;
+  font-weight: 400;
+  line-height: 1.2;
+  color: var(--text-primary);
+}
+
+h1 {
+  font-family: var(--font-cinzel-decorative), serif;
+}
+
+/* Utility classes for the Tale aesthetic */
+@layer components {
+  /* Parchment card base */
+  .parchment-card {
+    @apply bg-parchment-light border border-parchment-border rounded-sm;
+    @apply relative overflow-hidden;
+    box-shadow: inset 0 0 30px rgba(10, 9, 8, 0.3);
+  }
+
+  .parchment-card::before {
+    content: '';
+    @apply absolute inset-0 pointer-events-none;
+    background:
+      radial-gradient(ellipse at center, transparent 0%, rgba(10, 9, 8, 0.2) 100%);
+  }
+
+  /* Gold glow effect */
+  .gold-glow {
+    text-shadow: 0 0 20px rgba(201, 162, 39, 0.5);
+  }
+
+  /* Silhouette style for SVGs */
+  .silhouette {
+    fill: var(--silhouette);
+    filter: drop-shadow(2px 4px 6px rgba(0, 0, 0, 0.5));
+  }
+
+  /* Illuminated text (like manuscript drop caps) */
+  .illuminated {
+    @apply text-gold font-display;
+    text-shadow:
+      0 0 10px rgba(201, 162, 39, 0.3),
+      0 0 20px rgba(201, 162, 39, 0.2);
+  }
+
+  /* Vignette overlay */
+  .vignette {
+    @apply pointer-events-none fixed inset-0 z-50;
+    background: radial-gradient(
+      ellipse at center,
+      transparent 0%,
+      transparent 50%,
+      rgba(10, 9, 8, 0.4) 100%
+    );
+  }
+
+  /* Parchment texture overlay */
+  .parchment-texture {
+    @apply pointer-events-none absolute inset-0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
+    opacity: 0.03;
+    mix-blend-mode: overlay;
+  }
+
+  /* Button styles */
+  .btn-primary {
+    @apply px-6 py-3 bg-gold text-silhouette font-heading uppercase tracking-wider;
+    @apply transition-all duration-300;
+    @apply hover:bg-gold-bright hover:shadow-glow-gold;
+  }
+
+  .btn-secondary {
+    @apply px-6 py-3 border border-gold text-gold font-heading uppercase tracking-wider;
+    @apply transition-all duration-300;
+    @apply hover:bg-gold/10 hover:shadow-glow-gold;
+  }
+}
+
+/* Animation utilities */
 @layer utilities {
   .text-balance {
     text-wrap: balance;
   }
+
+  /* Stagger delay utilities for animations */
+  .delay-100 { animation-delay: 100ms; }
+  .delay-200 { animation-delay: 200ms; }
+  .delay-300 { animation-delay: 300ms; }
+  .delay-400 { animation-delay: 400ms; }
+  .delay-500 { animation-delay: 500ms; }
+
+  /* SVG stroke animation setup */
+  .stroke-draw {
+    stroke-dasharray: 1000;
+    stroke-dashoffset: 1000;
+  }
+}
+
+/* Prose styling for markdown content */
+.prose-tale {
+  @apply text-text-primary;
+}
+
+.prose-tale h1,
+.prose-tale h2,
+.prose-tale h3 {
+  @apply text-text-primary font-heading;
+}
+
+.prose-tale a {
+  @apply text-gold hover:text-gold-bright transition-colors;
+}
+
+.prose-tale strong {
+  @apply text-gold font-semibold;
+}
+
+.prose-tale code {
+  @apply bg-parchment-light text-gold-bright px-1 py-0.5 rounded font-mono text-sm;
+}
+
+.prose-tale pre {
+  @apply bg-silhouette border border-parchment-border rounded-sm;
+}
+
+.prose-tale blockquote {
+  @apply border-l-2 border-gold pl-4 italic text-text-secondary;
 }
