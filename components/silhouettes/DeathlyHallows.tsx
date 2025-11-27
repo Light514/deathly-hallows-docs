@@ -81,7 +81,7 @@ export function DeathlyHallows({
 
       {/* Circle - The Resurrection Stone */}
       <motion.path
-        d="M 70 58 A 20 20 0 1 1 69.99 58"
+        d="M 30 58 A 20 20 0 0 1 70 58 A 20 20 0 0 1 30 58"
         fill="none"
         stroke="currentColor"
         strokeWidth={strokeWidth}

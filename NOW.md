@@ -9,7 +9,7 @@
 Building a website to document and explain the Hybrid Documentation System using a "Tale of Three Brothers" aesthetic from Harry Potter.
 
 ## Next Step
-Verify 3 bug fixes in browser (circle gap, scroll overlap, background symbol) then deploy.
+✅ DEPLOYED! Site live at https://deathly-hallows-docs.netlify.app
 
 ## Quick Context
 - Working in: deathly-hallows-site/
