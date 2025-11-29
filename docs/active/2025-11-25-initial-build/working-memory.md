@@ -78,11 +78,27 @@ Fixed 3 visual issues before deployment:
 
 ### Deployment (2025-11-25)
 
-Successfully deployed to Netlify:
-- **Live URL**: https://deathly-hallows-docs.netlify.app
-- **Admin**: https://app.netlify.com/projects/deathly-hallows-docs
-- Configured Next.js static export (`output: 'export'`)
-- Used Netlify CLI for deployment
+Initially deployed to Netlify, then migrated to Vercel.
+
+### GSAP Migration (2025-11-29)
+
+Full migration from Framer Motion to GSAP:
+
+1. **lib/gsap.ts** - Created GSAP configuration with ScrollTrigger
+2. **Hero.tsx** - Orchestrated timeline entrance with parallax
+3. **DustMotes.tsx** - GSAP particle system with wind gusts
+4. **ScrollReveal.tsx** - GSAP ScrollTrigger with scrub option
+5. **DeathlyHallows.tsx** - SVG stroke animation with glow pulse
+6. **ThreeHallows.tsx** - GSAP hover effects on cards
+7. **TheProblem.tsx** - GSAP floating paper animations
+8. **TheSolution.tsx** - GSAP glow effects
+
+### Vercel Deployment (2025-11-29)
+
+Migrated from Netlify to Vercel for native Next.js support:
+- **Live URL**: https://deathly-hallows-site.vercel.app
+- Removed static export config (Vercel handles SSR natively)
+- Created dynamic favicon and OG image
 
 ### Project Complete
-The Deathly Hallows Documentation Site is now live!
+The Deathly Hallows Documentation Site is now live on Vercel with full GSAP animations!

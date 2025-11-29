@@ -1,6 +1,7 @@
 "use client";
 
-import { motion } from "framer-motion";
+import { useRef, useEffect } from "react";
+import { gsap } from "@/lib/gsap";
 import { ScrollReveal } from "../effects";
 import { ParchmentCard } from "../ui";
 
@@ -77,6 +78,76 @@ const hallows = [
   },
 ];
 
+function HallowCard({ hallow, index }: { hallow: (typeof hallows)[0]; index: number }) {
+  const cardRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (!cardRef.current) return;
+
+    const card = cardRef.current;
+
+    const handleMouseEnter = () => {
+      gsap.to(card, {
+        y: -8,
+        scale: 1.02,
+        duration: 0.3,
+        ease: "power2.out",
+      });
+    };
+
+    const handleMouseLeave = () => {
+      gsap.to(card, {
+        y: 0,
+        scale: 1,
+        duration: 0.3,
+        ease: "power2.out",
+      });
+    };
+
+    card.addEventListener("mouseenter", handleMouseEnter);
+    card.addEventListener("mouseleave", handleMouseLeave);
+
+    return () => {
+      card.removeEventListener("mouseenter", handleMouseEnter);
+      card.removeEventListener("mouseleave", handleMouseLeave);
+    };
+  }, []);
+
+  return (
+    <ScrollReveal delay={index * 0.15}>
+      <ParchmentCard className="p-8 h-full">
+        <div ref={cardRef} className="flex flex-col items-center text-center h-full">
+          {/* Icon */}
+          <div className="mb-6">{hallow.icon}</div>
+
+          {/* Name */}
+          <h3 className="font-heading text-xl text-gold mb-2">{hallow.name}</h3>
+
+          {/* File badge */}
+          <span className="font-mono text-xs bg-silhouette px-3 py-1 rounded text-gold-bright mb-4">
+            {hallow.file}
+          </span>
+
+          {/* Power */}
+          <span className="text-xs uppercase tracking-wider text-text-secondary mb-4">
+            {hallow.power}
+          </span>
+
+          {/* Description */}
+          <p className="font-body text-sm text-text-secondary flex-grow mb-4">
+            {hallow.description}
+          </p>
+
+          {/* Quote */}
+          <p className="font-body italic text-xs text-gold/60">
+            &ldquo;{hallow.quote}&rdquo;
+          </p>
+        </div>
+      </ParchmentCard>
+    </ScrollReveal>
+  );
+}
+
 export function ThreeHallows() {
   return (
     <section className="relative py-24 px-4">
@@ -95,48 +166,12 @@ export function ThreeHallows() {
         {/* Hallows Grid */}
         <div className="grid md:grid-cols-3 gap-8">
           {hallows.map((hallow, index) => (
-            <ScrollReveal key={hallow.name} delay={index * 0.2}>
-              <ParchmentCard className="p-8 h-full">
-                <motion.div
-                  className="flex flex-col items-center text-center h-full"
-                  whileHover={{ y: -5 }}
-                  transition={{ duration: 0.3 }}
-                >
-                  {/* Icon */}
-                  <div className="mb-6">{hallow.icon}</div>
-
-                  {/* Name */}
-                  <h3 className="font-heading text-xl text-gold mb-2">
-                    {hallow.name}
-                  </h3>
-
-                  {/* File badge */}
-                  <span className="font-mono text-xs bg-silhouette px-3 py-1 rounded text-gold-bright mb-4">
-                    {hallow.file}
-                  </span>
-
-                  {/* Power */}
-                  <span className="text-xs uppercase tracking-wider text-text-secondary mb-4">
-                    {hallow.power}
-                  </span>
-
-                  {/* Description */}
-                  <p className="font-body text-sm text-text-secondary flex-grow mb-4">
-                    {hallow.description}
-                  </p>
-
-                  {/* Quote */}
-                  <p className="font-body italic text-xs text-gold/60">
-                    &ldquo;{hallow.quote}&rdquo;
-                  </p>
-                </motion.div>
-              </ParchmentCard>
-            </ScrollReveal>
+            <HallowCard key={hallow.name} hallow={hallow} index={index} />
           ))}
         </div>
 
         {/* Bottom connector - Deathly Hallows hint */}
-        <ScrollReveal delay={0.8} className="mt-16 text-center">
+        <ScrollReveal delay={0.6} className="mt-16 text-center">
           <p className="font-body text-sm text-text-secondary italic">
             &ldquo;Together, they make one the Master of Documentation...&rdquo;
           </p>

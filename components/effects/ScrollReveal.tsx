@@ -1,14 +1,16 @@
 "use client";
 
-import { useRef } from "react";
-import { motion, useInView } from "framer-motion";
+import { useRef, ReactNode } from "react";
+import { gsap, useGSAP } from "@/lib/gsap";
 
 interface ScrollRevealProps {
-  children: React.ReactNode;
+  children: ReactNode;
   className?: string;
   delay?: number;
   direction?: "up" | "down" | "left" | "right" | "none";
   duration?: number;
+  scrub?: boolean;
+  stagger?: number;
 }
 
 export function ScrollReveal({
@@ -16,39 +18,58 @@ export function ScrollReveal({
   className = "",
   delay = 0,
   direction = "up",
-  duration = 0.6,
+  duration = 0.8,
+  scrub = false,
+  stagger = 0,
 }: ScrollRevealProps) {
-  const ref = useRef(null);
-  const isInView = useInView(ref, { once: true, margin: "-100px" });
+  const containerRef = useRef<HTMLDivElement>(null);
 
   const directions = {
-    up: { y: 40, x: 0 },
-    down: { y: -40, x: 0 },
-    left: { y: 0, x: 40 },
-    right: { y: 0, x: -40 },
+    up: { y: 60, x: 0 },
+    down: { y: -60, x: 0 },
+    left: { y: 0, x: 60 },
+    right: { y: 0, x: -60 },
     none: { y: 0, x: 0 },
   };
 
+  useGSAP(
+    () => {
+      if (!containerRef.current) return;
+
+      const element = containerRef.current;
+      const children = stagger > 0 ? element.children : element;
+
+      gsap.fromTo(
+        children,
+        {
+          opacity: 0,
+          y: directions[direction].y,
+          x: directions[direction].x,
+        },
+        {
+          opacity: 1,
+          y: 0,
+          x: 0,
+          duration: scrub ? 1 : duration,
+          delay: scrub ? 0 : delay,
+          stagger: stagger,
+          ease: "power3.out",
+          scrollTrigger: {
+            trigger: element,
+            start: "top 85%",
+            end: scrub ? "top 20%" : undefined,
+            scrub: scrub ? 1 : false,
+            toggleActions: scrub ? undefined : "play none none none",
+          },
+        }
+      );
+    },
+    { scope: containerRef }
+  );
+
   return (
-    <motion.div
-      ref={ref}
-      className={className}
-      initial={{
-        opacity: 0,
-        ...directions[direction],
-      }}
-      animate={{
-        opacity: isInView ? 1 : 0,
-        y: isInView ? 0 : directions[direction].y,
-        x: isInView ? 0 : directions[direction].x,
-      }}
-      transition={{
-        duration,
-        delay,
-        ease: [0.25, 0.4, 0.25, 1],
-      }}
-    >
+    <div ref={containerRef} className={className} style={{ opacity: 0 }}>
       {children}
-    </motion.div>
+    </div>
   );
 }

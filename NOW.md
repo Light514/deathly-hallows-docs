@@ -9,11 +9,11 @@
 Building a website to document and explain the Hybrid Documentation System using a "Tale of Three Brothers" aesthetic from Harry Potter.
 
 ## Next Step
-✅ DEPLOYED! Site live at https://deathly-hallows-docs.netlify.app
+✅ COMPLETE! Site live at https://deathly-hallows-site.vercel.app
 
 ## Quick Context
 - Working in: deathly-hallows-site/
-- Tech Stack: Next.js 14, TypeScript, Tailwind, Framer Motion
+- Tech Stack: Next.js 14, TypeScript, Tailwind, GSAP
 - Expected time: Initial build complete, polish phase
 - Active folder: docs/active/2025-11-25-initial-build/
 

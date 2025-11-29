@@ -1,20 +1,46 @@
 "use client";
 
-import { motion } from "framer-motion";
+import { useRef, useEffect } from "react";
+import { gsap } from "@/lib/gsap";
 import { ScrollReveal } from "../effects";
 
 export function TheProblem() {
+  const papers1Ref = useRef<SVGGElement>(null);
+  const papers2Ref = useRef<SVGGElement>(null);
+
+  useEffect(() => {
+    if (!papers1Ref.current || !papers2Ref.current) return;
+
+    // Floating papers animation - group 1
+    gsap.to(papers1Ref.current, {
+      x: 20,
+      y: -10,
+      opacity: 0.3,
+      duration: 4,
+      repeat: -1,
+      yoyo: true,
+      ease: "sine.inOut",
+    });
+
+    // Floating papers animation - group 2
+    gsap.to(papers2Ref.current, {
+      x: -15,
+      y: -15,
+      opacity: 0.2,
+      duration: 5,
+      repeat: -1,
+      yoyo: true,
+      ease: "sine.inOut",
+      delay: 1,
+    });
+  }, []);
+
   return (
     <section className="relative py-24 px-4 bg-silhouette/30">
       <div className="max-w-4xl mx-auto">
         {/* Tale-style narrative */}
         <ScrollReveal className="text-center mb-12">
-          <motion.div
-            initial={{ opacity: 0 }}
-            whileInView={{ opacity: 1 }}
-            transition={{ duration: 1 }}
-            className="font-body italic text-lg sm:text-xl text-text-secondary leading-relaxed"
-          >
+          <div className="font-body italic text-lg sm:text-xl text-text-secondary leading-relaxed">
             <p className="mb-6">
               <span className="text-gold text-4xl font-display not-italic">
                 T
@@ -23,7 +49,7 @@ export function TheProblem() {
               AI. They coded through day and night, their digital companions
               ever-present...
             </p>
-          </motion.div>
+          </div>
         </ScrollReveal>
 
         {/* The Problem visualization */}
@@ -54,19 +80,7 @@ export function TheProblem() {
                 </g>
 
                 {/* Floating away context - animated leaves/papers */}
-                <motion.g
-                  initial={{ opacity: 0.8 }}
-                  animate={{
-                    opacity: [0.8, 0.3, 0.8],
-                    x: [0, 20, 0],
-                    y: [0, -10, 0],
-                  }}
-                  transition={{
-                    duration: 4,
-                    repeat: Infinity,
-                    ease: "easeInOut",
-                  }}
-                >
+                <g ref={papers1Ref} style={{ opacity: 0.8 }}>
                   <rect
                     x="140"
                     y="70"
@@ -91,23 +105,10 @@ export function TheProblem() {
                     className="fill-gold/10"
                     transform="rotate(25 170 87)"
                   />
-                </motion.g>
+                </g>
 
                 {/* Second set floating opposite */}
-                <motion.g
-                  initial={{ opacity: 0.6 }}
-                  animate={{
-                    opacity: [0.6, 0.2, 0.6],
-                    x: [0, -15, 0],
-                    y: [0, -15, 0],
-                  }}
-                  transition={{
-                    duration: 5,
-                    repeat: Infinity,
-                    ease: "easeInOut",
-                    delay: 1,
-                  }}
-                >
+                <g ref={papers2Ref} style={{ opacity: 0.6 }}>
                   <rect
                     x="35"
                     y="65"
@@ -124,7 +125,7 @@ export function TheProblem() {
                     className="fill-gold/15"
                     transform="rotate(10 25 92)"
                   />
-                </motion.g>
+                </g>
               </svg>
             </div>
           </ScrollReveal>

@@ -1,6 +1,7 @@
 "use client";
 
-import { motion, Variants } from "framer-motion";
+import { useRef, useEffect } from "react";
+import { gsap } from "@/lib/gsap";
 
 interface DeathlyHallowsProps {
   className?: string;
@@ -15,81 +16,137 @@ export function DeathlyHallows({
   animated = true,
   glowing = false,
 }: DeathlyHallowsProps) {
+  const svgRef = useRef<SVGSVGElement>(null);
+  const triangleRef = useRef<SVGPathElement>(null);
+  const circleRef = useRef<SVGPathElement>(null);
+  const lineRef = useRef<SVGLineElement>(null);
+
   const strokeWidth = size * 0.015;
 
-  // Animation variants
-  const triangleVariants: Variants = {
-    hidden: { pathLength: 0, opacity: 0 },
-    visible: {
-      pathLength: 1,
-      opacity: 1,
-      transition: {
-        pathLength: { duration: 1.5, ease: [0.4, 0, 0.2, 1] },
-        opacity: { duration: 0.3 },
-      },
-    },
-  };
+  useEffect(() => {
+    if (!animated || !svgRef.current) return;
 
-  const circleVariants: Variants = {
-    hidden: { pathLength: 0, opacity: 0 },
-    visible: {
-      pathLength: 1,
-      opacity: 1,
-      transition: {
-        pathLength: { duration: 1, ease: [0.4, 0, 0.2, 1], delay: 0.8 },
-        opacity: { duration: 0.3, delay: 0.8 },
-      },
-    },
-  };
+    const triangle = triangleRef.current;
+    const circle = circleRef.current;
+    const line = lineRef.current;
 
-  const lineVariants: Variants = {
-    hidden: { pathLength: 0, opacity: 0 },
-    visible: {
-      pathLength: 1,
-      opacity: 1,
-      transition: {
-        pathLength: { duration: 0.8, ease: [0.4, 0, 0.2, 1], delay: 1.5 },
-        opacity: { duration: 0.3, delay: 1.5 },
-      },
-    },
-  };
+    if (!triangle || !circle || !line) return;
 
-  const glowFilter = glowing
+    // Get path lengths for stroke animation
+    const triangleLength = triangle.getTotalLength();
+    const circleLength = circle.getTotalLength();
+    const lineLength = Math.sqrt(Math.pow(85 - 10, 2)); // Line from y=10 to y=85
+
+    // Set initial state
+    gsap.set([triangle, circle, line], {
+      strokeDasharray: (i) => [triangleLength, circleLength, lineLength][i],
+      strokeDashoffset: (i) => [triangleLength, circleLength, lineLength][i],
+      opacity: 0,
+    });
+
+    // Create master timeline
+    const tl = gsap.timeline();
+
+    // Triangle draws first
+    tl.to(triangle, {
+      strokeDashoffset: 0,
+      opacity: 1,
+      duration: 1.5,
+      ease: "power2.inOut",
+    });
+
+    // Circle draws second
+    tl.to(
+      circle,
+      {
+        strokeDashoffset: 0,
+        opacity: 1,
+        duration: 1,
+        ease: "power2.inOut",
+      },
+      "-=0.7"
+    );
+
+    // Line draws last
+    tl.to(
+      line,
+      {
+        strokeDashoffset: 0,
+        opacity: 1,
+        duration: 0.8,
+        ease: "power2.inOut",
+      },
+      "-=0.5"
+    );
+
+    // Add glow pulse if enabled
+    if (glowing) {
+      tl.to(
+        svgRef.current,
+        {
+          filter:
+            "drop-shadow(0 0 15px rgba(201, 162, 39, 0.8)) drop-shadow(0 0 30px rgba(201, 162, 39, 0.5))",
+          duration: 0.5,
+          ease: "power2.out",
+        },
+        "-=0.3"
+      );
+
+      // Continuous glow pulse
+      gsap.to(svgRef.current, {
+        filter:
+          "drop-shadow(0 0 20px rgba(201, 162, 39, 0.9)) drop-shadow(0 0 40px rgba(201, 162, 39, 0.6))",
+        duration: 2,
+        repeat: -1,
+        yoyo: true,
+        ease: "sine.inOut",
+        delay: 2.5,
+      });
+    }
+
+    return () => {
+      tl.kill();
+    };
+  }, [animated, glowing]);
+
+  const staticGlowFilter = glowing
     ? "drop-shadow(0 0 10px rgba(201, 162, 39, 0.6)) drop-shadow(0 0 20px rgba(201, 162, 39, 0.4))"
     : "none";
 
   return (
-    <motion.svg
+    <svg
+      ref={svgRef}
       width={size}
       height={size}
       viewBox="0 0 100 100"
       className={className}
-      style={{ filter: glowFilter }}
-      initial={animated ? "hidden" : "visible"}
-      animate="visible"
+      style={{ filter: animated ? "none" : staticGlowFilter }}
     >
       {/* Triangle - The Cloak of Invisibility */}
-      <motion.path
+      <path
+        ref={triangleRef}
         d="M50 10 L90 85 L10 85 Z"
         fill="none"
         stroke="currentColor"
         strokeWidth={strokeWidth}
         strokeLinecap="round"
         strokeLinejoin="round"
-        variants={animated ? triangleVariants : undefined}
+        style={{ opacity: animated ? 0 : 1 }}
       />
 
       {/* Circle - The Resurrection Stone */}
-      <motion.path
+      <path
+        ref={circleRef}
         d="M 30 58 A 20 20 0 0 1 70 58 A 20 20 0 0 1 30 58"
         fill="none"
         stroke="currentColor"
         strokeWidth={strokeWidth}
-        variants={animated ? circleVariants : undefined}
+        style={{ opacity: animated ? 0 : 1 }}
       />
 
       {/* Vertical Line - The Elder Wand */}
-      <motion.line
+      <line
+        ref={lineRef}
         x1="50"
         y1="10"
         x2="50"
@@ -97,8 +154,8 @@ export function DeathlyHallows({
         stroke="currentColor"
         strokeWidth={strokeWidth}
         strokeLinecap="round"
-        variants={animated ? lineVariants : undefined}
+        style={{ opacity: animated ? 0 : 1 }}
       />
-    </motion.svg>
+    </svg>
   );
 }
