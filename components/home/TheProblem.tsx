@@ -1,40 +1,8 @@
 "use client";
 
-import { useRef, useEffect } from "react";
-import { gsap } from "@/lib/gsap";
 import { ScrollReveal } from "../effects";
 
 export function TheProblem() {
-  const papers1Ref = useRef<SVGGElement>(null);
-  const papers2Ref = useRef<SVGGElement>(null);
-
-  useEffect(() => {
-    if (!papers1Ref.current || !papers2Ref.current) return;
-
-    // Floating papers animation - group 1
-    gsap.to(papers1Ref.current, {
-      x: 20,
-      y: -10,
-      opacity: 0.3,
-      duration: 4,
-      repeat: -1,
-      yoyo: true,
-      ease: "sine.inOut",
-    });
-
-    // Floating papers animation - group 2
-    gsap.to(papers2Ref.current, {
-      x: -15,
-      y: -15,
-      opacity: 0.2,
-      duration: 5,
-      repeat: -1,
-      yoyo: true,
-      ease: "sine.inOut",
-      delay: 1,
-    });
-  }, []);
-
   return (
     <section className="relative py-24 px-4 bg-silhouette/30">
       <div className="max-w-4xl mx-auto">
@@ -80,7 +48,7 @@ export function TheProblem() {
                 </g>
 
                 {/* Floating away context - animated leaves/papers */}
-                <g ref={papers1Ref} style={{ opacity: 0.8 }}>
+                <g className="animate-float-papers-1">
                   <rect
                     x="140"
                     y="70"
@@ -108,7 +76,7 @@ export function TheProblem() {
                 </g>
 
                 {/* Second set floating opposite */}
-                <g ref={papers2Ref} style={{ opacity: 0.6 }}>
+                <g className="animate-float-papers-2">
                   <rect
                     x="35"
                     y="65"

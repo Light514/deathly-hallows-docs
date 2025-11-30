@@ -1,9 +1,9 @@
 "use client";
 
-import { useRef, useEffect } from "react";
-import { gsap } from "@/lib/gsap";
+import { motion } from "framer-motion";
 import { ScrollReveal } from "../effects";
 import { ParchmentCard } from "../ui";
+import { springs } from "@/lib/motion";
 
 const hallows = [
   {
@@ -79,44 +79,14 @@ const hallows = [
 ];
 
 function HallowCard({ hallow, index }: { hallow: (typeof hallows)[0]; index: number }) {
-  const cardRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    if (!cardRef.current) return;
-
-    const card = cardRef.current;
-
-    const handleMouseEnter = () => {
-      gsap.to(card, {
-        y: -8,
-        scale: 1.02,
-        duration: 0.3,
-        ease: "power2.out",
-      });
-    };
-
-    const handleMouseLeave = () => {
-      gsap.to(card, {
-        y: 0,
-        scale: 1,
-        duration: 0.3,
-        ease: "power2.out",
-      });
-    };
-
-    card.addEventListener("mouseenter", handleMouseEnter);
-    card.addEventListener("mouseleave", handleMouseLeave);
-
-    return () => {
-      card.removeEventListener("mouseenter", handleMouseEnter);
-      card.removeEventListener("mouseleave", handleMouseLeave);
-    };
-  }, []);
-
   return (
     <ScrollReveal delay={index * 0.15}>
       <ParchmentCard className="p-8 h-full">
-        <div ref={cardRef} className="flex flex-col items-center text-center h-full">
+        <motion.div
+          className="flex flex-col items-center text-center h-full"
+          whileHover={{ y: -8, scale: 1.02 }}
+          transition={springs.snappy}
+        >
           {/* Icon */}
           <div className="mb-6">{hallow.icon}</div>
 
@@ -142,7 +112,7 @@ function HallowCard({ hallow, index }: { hallow: (typeof hallows)[0]; index: num
           <p className="font-body italic text-xs text-gold/60">
             &ldquo;{hallow.quote}&rdquo;
           </p>
-        </div>
+        </motion.div>
       </ParchmentCard>
     </ScrollReveal>
   );

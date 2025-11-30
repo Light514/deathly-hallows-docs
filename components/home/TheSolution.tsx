@@ -1,28 +1,10 @@
 "use client";
 
-import { useRef, useEffect } from "react";
-import { gsap } from "@/lib/gsap";
 import { ScrollReveal } from "../effects";
 import { DeathlyHallows } from "../silhouettes";
 import { Button } from "../ui";
 
 export function TheSolution() {
-  const symbolContainerRef = useRef<HTMLDivElement>(null);
-  const glowRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    if (!glowRef.current) return;
-
-    // Radiating glow effect
-    gsap.to(glowRef.current, {
-      boxShadow: "0 0 100px rgba(201, 162, 39, 0.4)",
-      duration: 1.5,
-      repeat: -1,
-      yoyo: true,
-      ease: "sine.inOut",
-    });
-  }, []);
-
   return (
     <section className="relative py-24 px-4">
       <div className="max-w-4xl mx-auto">
@@ -43,7 +25,7 @@ export function TheSolution() {
         {/* The Solution visualization */}
         <ScrollReveal className="flex flex-col items-center">
           {/* Animated Deathly Hallows coming together */}
-          <div ref={symbolContainerRef} className="relative mb-12">
+          <div className="relative mb-12">
             <DeathlyHallows
               size={200}
               animated={true}
@@ -53,8 +35,7 @@ export function TheSolution() {
 
             {/* Radiating glow effect */}
             <div
-              ref={glowRef}
-              className="absolute inset-0 -z-10 rounded-full"
+              className="absolute inset-0 -z-10 rounded-full animate-glow-radiate"
               style={{ boxShadow: "0 0 60px rgba(201, 162, 39, 0.2)" }}
             />
           </div>

@@ -57,9 +57,12 @@ const config: Config = {
         "fade-in": "fadeIn 0.6s ease-out forwards",
         "fade-in-up": "fadeInUp 0.8s ease-out forwards",
         "draw-line": "drawLine 1.5s ease-out forwards",
-        "glow-pulse": "glowPulse 2s ease-in-out infinite",
+        "glow-pulse": "glowPulse 3s ease-in-out infinite",
         "dust-float": "dustFloat 8s ease-in-out infinite",
         "candle-flicker": "candleFlicker 3s ease-in-out infinite",
+        "float-papers-1": "floatPapers1 8s ease-in-out infinite",
+        "float-papers-2": "floatPapers2 10s ease-in-out infinite 1s",
+        "glow-radiate": "glowRadiate 3s ease-in-out infinite",
       },
 
       keyframes: {
@@ -80,12 +83,46 @@ const config: Config = {
           "50%": { filter: "drop-shadow(0 0 20px rgba(201, 162, 39, 0.8))" },
         },
         dustFloat: {
-          "0%, 100%": { transform: "translateY(0) translateX(0)", opacity: "0.3" },
-          "50%": { transform: "translateY(-20px) translateX(10px)", opacity: "0.6" },
+          "0%, 100%": {
+            transform: "translateY(0) translateX(0)",
+            opacity: "0.2"
+          },
+          "50%": {
+            transform: "translateY(var(--float-y, -30px)) translateX(var(--drift-x, 15px))",
+            opacity: "0.5"
+          },
         },
         candleFlicker: {
           "0%, 100%": { opacity: "1", filter: "brightness(1)" },
           "50%": { opacity: "0.85", filter: "brightness(0.9)" },
+        },
+        floatPapers1: {
+          "0%, 100%": {
+            transform: "translate(0, 0)",
+            opacity: "0.8"
+          },
+          "50%": {
+            transform: "translate(20px, -10px)",
+            opacity: "0.3"
+          },
+        },
+        floatPapers2: {
+          "0%, 100%": {
+            transform: "translate(0, 0)",
+            opacity: "0.6"
+          },
+          "50%": {
+            transform: "translate(-15px, -15px)",
+            opacity: "0.2"
+          },
+        },
+        glowRadiate: {
+          "0%, 100%": {
+            boxShadow: "0 0 60px rgba(201, 162, 39, 0.2)"
+          },
+          "50%": {
+            boxShadow: "0 0 100px rgba(201, 162, 39, 0.4)"
+          },
         },
       },
 

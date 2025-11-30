@@ -1,124 +1,102 @@
 "use client";
 
 import { useRef } from "react";
-import { gsap, useGSAP } from "@/lib/gsap";
+import { motion, useScroll, useTransform, Variants } from "framer-motion";
 import { DeathlyHallows } from "../silhouettes";
 import { DustMotes } from "../effects";
 import { Button } from "../ui";
+import { useReducedMotion } from "@/hooks";
+import { springs } from "@/lib/motion";
+
+// Orchestrated entrance animation variants
+const containerVariants: Variants = {
+  hidden: {},
+  visible: {
+    transition: {
+      staggerChildren: 0.15,
+      delayChildren: 0.1,
+    },
+  },
+};
+
+const symbolVariants: Variants = {
+  hidden: { opacity: 0, scale: 0.5, filter: "blur(10px)" },
+  visible: {
+    opacity: 1,
+    scale: 1,
+    filter: "blur(0px)",
+    transition: {
+      duration: 1,
+      ease: [0.22, 1, 0.36, 1],
+    },
+  },
+};
+
+const titleVariants: Variants = {
+  hidden: { opacity: 0, y: 40 },
+  visible: {
+    opacity: 1,
+    y: 0,
+    transition: springs.gentle,
+  },
+};
+
+const subtitleVariants: Variants = {
+  hidden: { opacity: 0, y: 30 },
+  visible: {
+    opacity: 1,
+    y: 0,
+    transition: springs.gentle,
+  },
+};
+
+const buttonContainerVariants: Variants = {
+  hidden: {},
+  visible: {
+    transition: {
+      staggerChildren: 0.1,
+    },
+  },
+};
+
+const buttonVariants: Variants = {
+  hidden: { opacity: 0, y: 20, scale: 0.95 },
+  visible: {
+    opacity: 1,
+    y: 0,
+    scale: 1,
+    transition: springs.gentle,
+  },
+};
+
+const scrollIndicatorVariants: Variants = {
+  hidden: { opacity: 0, y: -10 },
+  visible: {
+    opacity: 1,
+    y: 0,
+    transition: {
+      delay: 1.5,
+      ...springs.gentle,
+    },
+  },
+};
 
 export function Hero() {
   const containerRef = useRef<HTMLElement>(null);
-  const backgroundSymbolRef = useRef<HTMLDivElement>(null);
-  const symbolRef = useRef<HTMLDivElement>(null);
-  const titleRef = useRef<HTMLHeadingElement>(null);
-  const subtitleRef = useRef<HTMLParagraphElement>(null);
-  const buttonsRef = useRef<HTMLDivElement>(null);
-  const scrollIndicatorRef = useRef<HTMLDivElement>(null);
+  const prefersReducedMotion = useReducedMotion();
 
-  useGSAP(
-    () => {
-      // Master timeline for orchestrated entrance
-      const tl = gsap.timeline({ defaults: { ease: "power3.out" } });
+  // Scroll-based animations
+  const { scrollYProgress } = useScroll({
+    target: containerRef,
+    offset: ["start start", "end start"],
+  });
 
-      // Symbol entrance with scale and glow
-      tl.fromTo(
-        symbolRef.current,
-        { opacity: 0, scale: 0.5, filter: "blur(10px)" },
-        { opacity: 1, scale: 1, filter: "blur(0px)", duration: 1.2 }
-      );
+  // Background parallax (moves down as you scroll)
+  const backgroundY = useTransform(scrollYProgress, [0, 1], [0, 150]);
 
-      // Title reveal
-      tl.fromTo(
-        titleRef.current,
-        { opacity: 0, y: 60 },
-        { opacity: 1, y: 0, duration: 0.8 },
-        "-=0.3"
-      );
-
-      // Subtitle fade in
-      tl.fromTo(
-        subtitleRef.current,
-        { opacity: 0, y: 40 },
-        { opacity: 1, y: 0, duration: 0.7 },
-        "-=0.4"
-      );
-
-      // Buttons stagger in
-      if (buttonsRef.current) {
-        const buttons = buttonsRef.current.querySelectorAll("a");
-        tl.fromTo(
-          buttons,
-          { opacity: 0, y: 30, scale: 0.95 },
-          { opacity: 1, y: 0, scale: 1, duration: 0.6, stagger: 0.15 },
-          "-=0.3"
-        );
-      }
-
-      // Scroll indicator fade in with bounce
-      tl.fromTo(
-        scrollIndicatorRef.current,
-        { opacity: 0, y: -20 },
-        { opacity: 1, y: 0, duration: 0.8 },
-        "-=0.2"
-      );
-
-      // Continuous scroll indicator bounce
-      const scrollMouse = scrollIndicatorRef.current?.querySelector(".scroll-mouse");
-      const scrollDot = scrollIndicatorRef.current?.querySelector(".scroll-dot");
-
-      if (scrollMouse) {
-        gsap.to(scrollMouse, {
-          y: 8,
-          duration: 1.2,
-          repeat: -1,
-          yoyo: true,
-          ease: "power1.inOut",
-        });
-      }
-
-      if (scrollDot) {
-        gsap.to(scrollDot, {
-          y: 10,
-          duration: 1.2,
-          repeat: -1,
-          yoyo: true,
-          ease: "power1.inOut",
-        });
-      }
-
-      // Parallax effect on background symbol
-      if (backgroundSymbolRef.current) {
-        gsap.to(backgroundSymbolRef.current, {
-          y: 150,
-          ease: "none",
-          scrollTrigger: {
-            trigger: containerRef.current,
-            start: "top top",
-            end: "bottom top",
-            scrub: 1,
-          },
-        });
-      }
-
-      // Fade out content on scroll
-      gsap.fromTo(
-        [titleRef.current, subtitleRef.current, buttonsRef.current],
-        { opacity: 1, y: 0 },
-        {
-          opacity: 0,
-          y: -50,
-          ease: "none",
-          scrollTrigger: {
-            trigger: containerRef.current,
-            start: "center center",
-            end: "bottom top",
-            scrub: 1,
-          },
-        }
-      );
-    },
-    { scope: containerRef }
-  );
+  // Content fade-out on scroll (starts at 30% scroll, fully faded at 70%)
+  const contentOpacity = useTransform(scrollYProgress, [0.3, 0.7], [1, 0]);
+  const contentY = useTransform(scrollYProgress, [0.3, 0.7], [0, -50]);
 
   return (
     <section
@@ -129,66 +107,100 @@ export function Hero() {
       <DustMotes count={40} className="opacity-60" />
 
       {/* Large background symbol with parallax */}
-      <div
-        ref={backgroundSymbolRef}
+      <motion.div
         className="absolute inset-0 flex items-center justify-center opacity-5 pt-16"
+        style={{ y: prefersReducedMotion ? 0 : backgroundY }}
       >
         <DeathlyHallows size={800} animated={false} />
-      </div>
+      </motion.div>
 
-      {/* Content */}
-      <div className="relative z-10 max-w-4xl mx-auto px-4 text-center">
+      {/* Content with fade-out on scroll */}
+      <motion.div
+        className="relative z-10 max-w-4xl mx-auto px-4 text-center"
+        style={{
+          opacity: prefersReducedMotion ? 1 : contentOpacity,
+          y: prefersReducedMotion ? 0 : contentY,
+        }}
+        variants={containerVariants}
+        initial="hidden"
+        animate="visible"
+      >
         {/* Animated Deathly Hallows Symbol */}
-        <div ref={symbolRef} className="flex justify-center mb-8 opacity-0">
+        <motion.div
+          className="flex justify-center mb-8"
+          variants={symbolVariants}
+        >
           <DeathlyHallows
             size={120}
             animated={true}
             glowing={true}
             className="text-gold"
           />
-        </div>
+        </motion.div>
 
         {/* Title */}
-        <h1
-          ref={titleRef}
-          className="font-display text-4xl sm:text-5xl md:text-6xl text-text-primary mb-6 opacity-0"
+        <motion.h1
+          className="font-display text-4xl sm:text-5xl md:text-6xl text-text-primary mb-6"
+          variants={titleVariants}
         >
           <span className="title-main">The Deathly Hallows</span>
           <span className="block text-gold mt-2">Documentation</span>
-        </h1>
+        </motion.h1>
 
         {/* Subtitle */}
-        <p
-          ref={subtitleRef}
-          className="font-body text-lg sm:text-xl text-text-secondary max-w-2xl mx-auto mb-8 opacity-0"
+        <motion.p
+          className="font-body text-lg sm:text-xl text-text-secondary max-w-2xl mx-auto mb-8"
+          variants={subtitleVariants}
         >
           Master the ancient art of AI-assisted development with the Hybrid
           Documentation System. Three artifacts. Infinite power.
-        </p>
+        </motion.p>
 
         {/* CTA Buttons */}
-        <div
-          ref={buttonsRef}
+        <motion.div
           className="flex flex-col sm:flex-row gap-4 justify-center"
+          variants={buttonContainerVariants}
         >
-          <Button href="/getting-started" variant="primary" size="lg">
-            Begin Your Journey
-          </Button>
-          <Button href="/philosophy" variant="secondary" size="lg">
-            Learn the Philosophy
-          </Button>
-        </div>
-      </div>
+          <motion.div variants={buttonVariants}>
+            <Button href="/getting-started" variant="primary" size="lg">
+              Begin Your Journey
+            </Button>
+          </motion.div>
+          <motion.div variants={buttonVariants}>
+            <Button href="/philosophy" variant="secondary" size="lg">
+              Learn the Philosophy
+            </Button>
+          </motion.div>
+        </motion.div>
+      </motion.div>
 
       {/* Scroll indicator */}
-      <div
-        ref={scrollIndicatorRef}
-        className="absolute bottom-6 left-1/2 -translate-x-1/2 opacity-0"
+      <motion.div
+        className="absolute bottom-6 left-1/2 -translate-x-1/2"
+        variants={scrollIndicatorVariants}
+        initial="hidden"
+        animate="visible"
       >
-        <div className="scroll-mouse w-6 h-10 border-2 border-gold/30 rounded-full flex justify-center">
-          <div className="scroll-dot w-1 h-2 bg-gold rounded-full mt-2" />
-        </div>
-      </div>
+        <motion.div
+          className="w-6 h-10 border-2 border-gold/30 rounded-full flex justify-center"
+          animate={prefersReducedMotion ? {} : { y: [0, 6, 0] }}
+          transition={{
+            duration: 2,
+            repeat: Infinity,
+            ease: "easeInOut",
+          }}
+        >
+          <motion.div
+            className="w-1 h-2 bg-gold rounded-full mt-2"
+            animate={prefersReducedMotion ? {} : { y: [0, 8, 0] }}
+            transition={{
+              duration: 2,
+              repeat: Infinity,
+              ease: "easeInOut",
+            }}
+          />
+        </motion.div>
+      </motion.div>
     </section>
   );
 }
